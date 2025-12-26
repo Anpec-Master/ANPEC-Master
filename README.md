@@ -10,7 +10,7 @@ Nosso objetivo é fornecer um ponto central de apoio, com conteúdos que auxilie
 
 O **ANPEC Master** é mais do que uma calculadora: é um espaço para **centralizar recursos de estudo e apoio para candidatos à ANPEC**, tornando o processo de preparação mais organizado e eficiente.  
 
-- Site oficial: [http://www.anpecmaster.com](http://www.anpecmaster.com)  
+- Site oficial: [[http://www.anpecmaster.com](https://anpecmaster3.wordpress.com/)]([http://www.anpecmaster.com](https://anpecmaster3.wordpress.com/))  
 - Instagram: [@anpecmaster](https://www.instagram.com/anpecmaster)  
 
 Siga nossas redes e fique atualizado com dicas, ferramentas e materiais úteis para a prova!
