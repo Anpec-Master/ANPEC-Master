@@ -1,0 +1,377 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora ANPEC Master</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+<style>
+  body { font-family: Arial, sans-serif; }
+  table { border-collapse: collapse; margin-top:15px; }
+  th, td { text-align: center; }
+  input { width: 80px; }
+</style>
+</head>
+
+<body>
+
+<div style="max-width:1000px;margin:auto">
+
+<h3>Calculadora ANPEC Master</h3>
+
+<label><strong>Edição:</strong></label>
+<select id="ano">
+  <option>2026</option><option>2025</option><option>2024</option>
+  <option>2023</option><option>2022</option><option>2021</option>
+  <option>2020</option><option>2019</option><option>2018</option>
+  <option>2017</option>
+</select>
+
+<hr>
+
+<table border="1" cellpadding="6" width="100%">
+  <tr style="background:#f0f0f0;">
+    <th style="width:180px;">Matéria</th>
+    <th>Acertos Tipo A</th>
+    <th>Erros Tipo A</th>
+    <th>Acertos Tipo B</th>
+    <th>Peso</th>
+  </tr>
+
+<tr><td>Macroeconomia</td>
+<td><input id="macro_avf" type="number"></td>
+<td><input id="macro_evf" type="number"></td>
+<td><input id="macro_anum" type="number"></td>
+<td><input id="macro_p" type="number" value="20"></td></tr>
+
+<tr><td>Estatística</td>
+<td><input id="estat_avf" type="number"></td>
+<td><input id="estat_evf" type="number"></td>
+<td><input id="estat_anum" type="number"></td>
+<td><input id="estat_p" type="number" value="20"></td></tr>
+
+<tr><td>Brasileira Objetiva</td>
+<td><input id="bras_avf" type="number"></td>
+<td><input id="bras_evf" type="number"></td>
+<td><input id="bras_anum" type="number" value="0" disabled></td>
+<td><input id="bras_p" type="number" value="20"></td></tr>
+
+<tr><td>Matemática</td>
+<td><input id="mat_avf" type="number"></td>
+<td><input id="mat_evf" type="number"></td>
+<td><input id="mat_anum" type="number"></td>
+<td><input id="mat_p" type="number" value="20"></td></tr>
+
+<tr><td>Microeconomia</td>
+<td><input id="micro_avf" type="number"></td>
+<td><input id="micro_evf" type="number"></td>
+<td><input id="micro_anum" type="number"></td>
+<td><input id="micro_p" type="number" value="20"></td></tr>
+</table>
+
+<br>
+
+<style>
+  button{
+    padding:10px 18px;
+    font-size:15px;
+    font-weight:bold;
+    border-radius:6px;
+    border:1px solid #999;
+    cursor:pointer;
+    margin-right:10px;
+    background:#f5f5f5;
+  }
+
+  button:hover{
+    background:#e0e0e0;
+  }
+
+  #btnCalc{
+    background:#2e7d32;
+    color:white;
+    border-color:#2e7d32;
+  }
+
+  #btnCalc:hover{
+    background:#256628;
+  }
+
+  #btnClear{
+    background:#c62828;
+    color:white;
+    border-color:#c62828;
+  }
+
+  #btnClear:hover{
+    background:#a51f1f;
+  }
+</style>
+
+<button id="btnCalc">Calcular</button>
+<button id="btnClear">Limpar</button>
+
+<p id="erro" style="color:red;font-weight:bold;"></p>
+
+<div id="res" style="display:none;margin-top:25px">
+
+<hr style="width:100%;border:none;border-top:1px solid #000;margin:20px 0;">
+<h4 style="text-align:center;font-size:24px;margin:10px 0;">
+  Resultados
+</h4>
+<hr style="width:100%;border:none;border-top:1px solid #000;margin:20px 0 30px 0;">
+
+
+<table border="1" cellpadding="6" width="100%" id="tabela"></table>
+
+<table border="1" cellpadding="6" width="100%" id="tabelaVF"></table>
+
+<p id="asfinal"></p>
+
+<canvas id="g1"></canvas>
+<br><br>
+<canvas id="g2"></canvas>
+
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+let graf1=null, graf2=null;
+
+const mats = ["macro","estat","bras","mat","micro"];
+const nomes = ["Macroeconomia","Estatística","Brasileira Objetiva","Matemática","Microeconomia"];
+
+const dados = {
+  2026:{m:{macro:1.92,estat:1.32,bras:1.15,mat:1.17,micro:1.45}, d:{macro:2.33,estat:1.8,bras:1.3,mat:1.38,micro:1.79}},
+  2025:{m:{macro:2.94,estat:1.6,bras:0.65,mat:0.82,micro:2.51}, d:{macro:2.33,estat:1.88,bras:1.51,mat:1.22,micro:1.89}},
+  2024:{m:{macro:2.33,estat:0.49,bras:1.36,mat:0.59,micro:1.92}, d:{macro:1.93,estat:1.68,bras:1.75,mat:1.36,micro:1.62}},
+  2023:{m:{macro:3.65,estat:2.31,bras:2.09,mat:2.75,micro:1.97}, d:{macro:3.71,estat:3.07,bras:2.25,mat:3.03,micro:2.76}},
+  2022:{m:{macro:2.25,estat:3,bras:2.14,mat:1.91,micro:2.8}, d:{macro:3.4,estat:3.12,bras:2.33,mat:2.46,micro:2.65}},
+  2021:{m:{macro:2.74,estat:2.95,bras:1.64,mat:0.99,micro:3.83}, d:{macro:2.46,estat:3.39,bras:2.27,mat:1.92,micro:2.82}},
+  2020:{m:{macro:3.21,estat:1.98,bras:1.89,mat:2.05,micro:2.9}, d:{macro:3.19,estat:2.73,bras:2.01,mat:2.64,micro:2.46}},
+  2019:{m:{macro:3.42,estat:3.12,bras:2,mat:2.25,micro:3.42}, d:{macro:3.48,estat:3.73,bras:1.89,mat:2.54,micro:2.83}},
+  2018:{m:{macro:3.14,estat:3.09,bras:2.02,mat:2.01,micro:2.89}, d:{macro:2.65,estat:2.96,bras:1.99,mat:2.51,micro:2.98}},
+  2017:{m:{macro:3.44,estat:2.59,bras:2.81,mat:1.05,micro:2.49}, d:{macro:3.03,estat:3.67,bras:1.9,mat:1.72,micro:2.26}}
+};
+
+const totalVF = {
+  2017:{macro:13,estat:12,bras:15,mat:12,micro:15},
+  2018:{macro:12,estat:10,bras:15,mat:12,micro:15},
+  2019:{macro:12,estat:11,bras:15,mat:13,micro:11},
+  2020:{macro:12,estat:11,bras:15,mat:12,micro:13},
+  2021:{macro:11,estat:10,bras:15,mat:11,micro:12},
+  2022:{macro:11,estat:11,bras:15,mat:12,micro:12},
+  2023:{macro:12,estat:11,bras:15,mat:12,micro:12},
+  2024:{macro:7,estat:8,bras:10,mat:8,micro:8},
+  2025:{macro:9,estat:8,bras:10,mat:8,micro:8},
+  2026:{macro:8,estat:7,bras:10,mat:8,micro:8}
+};
+
+const totalNum = {
+  2017:{macro:2,estat:3,bras:0,mat:3,micro:0},
+  2018:{macro:3,estat:5,bras:0,mat:3,micro:0},
+  2019:{macro:3,estat:4,bras:0,mat:2,micro:4},
+  2020:{macro:3,estat:4,bras:0,mat:3,micro:2},
+  2021:{macro:4,estat:5,bras:0,mat:4,micro:3},
+  2022:{macro:4,estat:4,bras:0,mat:3,micro:3},
+  2023:{macro:3,estat:4,bras:0,mat:3,micro:3},
+  2024:{macro:3,estat:2,bras:0,mat:2,micro:2},
+  2025:{macro:1,estat:2,bras:0,mat:2,micro:2},
+  2026:{macro:2,estat:3,bras:0,mat:2,micro:2}
+};
+
+document.getElementById("btnCalc").onclick = () => {
+
+let erro = document.getElementById("erro");
+erro.innerText = "";
+
+let somaPesos = 0;
+mats.forEach(m => somaPesos += +document.getElementById(m+"_p").value || 0);
+if (somaPesos > 100) {
+  erro.innerText = "⚠ A soma dos pesos deve ser exatamente 100.";
+  return;
+}
+
+const ano = document.getElementById("ano").value;
+let AS = 0;
+
+let tabela = `
+<tr style="background:#f0f0f0;">
+  <th style="width:180px;">Matéria</th>
+  <th>RP</th>
+  <th>EP</th>
+  <th>NS</th>
+  <th>Média de ${ano}</th>
+  <th>Resultado</th>
+</tr>`;
+
+let tabelaVF = `
+<tr style="background:#f0f0f0;">
+  <th style="width:180px;">Matéria</th>
+  <th>Taxa de Aproveitamento em Questões Tipo A</th>
+</tr>`;
+
+let vf=[], num=[], vf_ac=[], vf_er=[], br=[];
+let valido = true;
+
+mats.forEach((m,i)=>{
+  let avf = +document.getElementById(m+"_avf").value || 0;
+  let evf = +document.getElementById(m+"_evf").value || 0;
+  let anum = +document.getElementById(m+"_anum").value || 0;
+  let peso = +document.getElementById(m+"_p").value || 0;
+
+  // total de itens VF = nº de questões * 5
+  let totalItensVF = totalVF[ano][m] * 5;
+
+  if (avf + evf > totalItensVF) {
+    erro.innerText = `❌ ${nomes[i]}: acertos + erros Tipo A excedem o total do ano.`;
+    valido = false;
+    return;
+  }
+
+  if (anum > totalNum[ano][m]) {
+    erro.innerText = `❌ ${nomes[i]}: Acertos Tipo B excedem o total do ano.`;
+    valido = false;
+    return;
+  }
+
+  if (!valido) return;
+
+  let RP = (avf - evf)/5 + anum;
+  let EP = (RP - dados[ano].m[m]) / dados[ano].d[m];
+  let NS = EP * 10 * peso;  // <-- nova coluna
+  AS += NS;
+
+  tabela += `<tr >
+    <td style="width:280px;">${nomes[i]}</td>
+    <td>${RP.toFixed(2)}</td>
+    <td>${EP.toFixed(2)}</td>
+    <td>${NS.toFixed(2)}</td>
+    <td>${dados[ano].m[m]}</td>
+    <td>${RP >= dados[ano].m[m] ? "✅ Acima da Média" : "❌ Abaixo da Média"}</td>
+  </tr>`;
+
+  let respVF = avf + evf;
+  tabelaVF += `<tr>
+    <td style="width:280px;">${nomes[i]}</td>
+    <td>${respVF > 0 ? (100*avf/respVF).toFixed(1)+"%" : "–"}</td>
+  </tr>`;
+
+  let pontosVF = avf * 0.2;
+  let pontosNum = anum;
+  let totalP = pontosVF + pontosNum;
+  vf.push(totalP ? 100*pontosVF/totalP : 0);
+  num.push(totalP ? 100*pontosNum/totalP : 0);
+
+  let totalVFano = totalVF[ano][m] * 5;
+  vf_ac.push(100*avf/totalVFano);
+  vf_er.push(100*evf/totalVFano);
+  br.push(100*(totalVFano-avf-evf)/totalVFano);
+});
+
+if (!valido) return;
+
+tabela += `<tr style="font-weight:bold; text-align:center; background-color:#f2f2f2;">
+  <td colspan="5">Argumento Semifinal Estimado</td>
+  <td>${AS.toFixed(2)}</td>
+</tr>`;
+
+
+document.getElementById("tabela").innerHTML = tabela;
+document.getElementById("tabelaVF").innerHTML = tabelaVF;
+document.getElementById("res").style.display = "block";
+if(graf1)graf1.destroy();
+if(graf2)graf2.destroy();
+
+graf1 = new Chart(g1,{
+  type:"bar",
+  data:{
+    labels:nomes,
+    datasets:[
+      {
+        label:"Acertos Tipo A (%)",
+        data:vf,
+        backgroundColor:"#bdbdbd" // cinza claro
+      },
+      {
+        label:"Acertos Tipo B (%)",
+        data:num,
+        backgroundColor:"#636363" // cinza escuro
+      }
+    ]
+  },
+  options:{
+    plugins:{
+      title:{
+        display:true,
+        text:"Composição dos Acertos",
+        color:"#000000",   // preto
+        font:{
+          size:18
+        }
+      }
+    },
+    scales:{
+      x:{stacked:true},
+      y:{stacked:true,max:100}
+    }
+  }
+});
+graf2 = new Chart(g2,{
+  type:"bar",
+  data:{
+    labels:nomes,
+    datasets:[
+      {
+        label:"Acertos (%)",
+        data:vf_ac,
+        backgroundColor:"#2e7d32" // verde
+      },
+      {
+        label:"Erros (%)",
+        data:vf_er,
+        backgroundColor:"#c62828" // vermelho
+      },
+      {
+        label:"Em branco (%)",
+        data:br,
+        backgroundColor:"#bdbdbd" // cinza
+      }
+    ]
+  },
+  options:{
+    plugins:{
+      title:{
+        display:true,
+        text:"Desempenho nas Questões Tipo A",
+        color:"#000000",   // preto
+        font:{
+          size:18
+        }
+      }
+    },
+    scales:{
+      x:{stacked:true},
+      y:{stacked:true,max:100}
+    }
+  }
+});
+
+};
+
+document.getElementById("btnClear").onclick = ()=>{
+  document.querySelectorAll("input").forEach(i=>{
+    i.value = i.id.endsWith("_p") ? 20 : "";
+  });
+  document.getElementById("res").style.display="none";
+  document.getElementById("erro").innerText="";
+  if(graf1)graf1.destroy();
+  if(graf2)graf2.destroy();
+};
+
+});
+</script>
+
+</body>
+</html>
