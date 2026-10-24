@@ -24,6 +24,7 @@
 
 <label><strong>Edição:</strong></label>
 <select id="ano">
+  <option>2027</option>
   <option>2026</option><option>2025</option><option>2024</option>
   <option>2023</option><option>2022</option><option>2021</option>
   <option>2020</option><option>2019</option><option>2018</option>
@@ -147,6 +148,7 @@ const mats = ["macro","estat","bras","mat","micro"];
 const nomes = ["Macroeconomia","Estatística","Brasileira Objetiva","Matemática","Microeconomia"];
 
 const dados = {
+  2027:{m:{macro:1.60,estat:0.41,bras:1.34,mat:0.47,micro:1.35}, d:{macro:1.94,estat:1.36,bras:1.51,mat:1.33,micro:1.39}},
   2026:{m:{macro:1.92,estat:1.32,bras:1.15,mat:1.17,micro:1.45}, d:{macro:2.33,estat:1.8,bras:1.3,mat:1.38,micro:1.79}},
   2025:{m:{macro:2.94,estat:1.6,bras:0.65,mat:0.82,micro:2.51}, d:{macro:2.33,estat:1.88,bras:1.51,mat:1.22,micro:1.89}},
   2024:{m:{macro:2.33,estat:0.49,bras:1.36,mat:0.59,micro:1.92}, d:{macro:1.93,estat:1.68,bras:1.75,mat:1.36,micro:1.62}},
@@ -169,7 +171,8 @@ const totalVF = {
   2023:{macro:12,estat:11,bras:15,mat:12,micro:12},
   2024:{macro:7,estat:8,bras:10,mat:8,micro:8},
   2025:{macro:9,estat:8,bras:10,mat:8,micro:8},
-  2026:{macro:8,estat:7,bras:10,mat:8,micro:8}
+  2026:{macro:8,estat:7,bras:10,mat:8,micro:8},
+  2027:{macro:7,estat:8,bras:10,mat:8,micro:7}
 };
 
 const totalNum = {
@@ -182,7 +185,8 @@ const totalNum = {
   2023:{macro:3,estat:4,bras:0,mat:3,micro:3},
   2024:{macro:3,estat:2,bras:0,mat:2,micro:2},
   2025:{macro:1,estat:2,bras:0,mat:2,micro:2},
-  2026:{macro:2,estat:3,bras:0,mat:2,micro:2}
+  2026:{macro:2,estat:3,bras:0,mat:2,micro:2},
+  2027:{macro:3,estat:2,bras:0,mat:2,micro:3}
 };
 
 document.getElementById("btnCalc").onclick = () => {
