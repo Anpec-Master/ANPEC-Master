@@ -320,6 +320,10 @@ function textoFaixa(p1, p2) {
   const a = pInteiro(Math.min(p1, p2));
   const b = pInteiro(Math.max(p1, p2));
 
+  if (a === b) {
+    return `Seu desempenho corresponde a um percentil estimado de ${a}%.`;
+  }
+
   return `Seu desempenho corresponde a um percentil estimado entre ${a}% e ${b}%.`;
 }
 
@@ -444,7 +448,7 @@ function atualizarGraficosDistribuicao() {
           marcadores: {
             media: media,
             rp: rp,
-            rotulo: `fmt2(rp)(P{pInteiro(pct)})`
+            rotulo: `${fmt2(rp)} (P${pInteiro(pct)})`
           }
         },
 
@@ -832,10 +836,5 @@ document.getElementById("btnClear").onclick = () => {
 
 </div>
 
-</body>
-</html>
-
-</body>
-</html>
 </body>
 </html>
